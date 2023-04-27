@@ -1,12 +1,4 @@
-import {
-  Column,
-  CreateDateColumn,
-  DeleteDateColumn,
-  Entity,
-  PrimaryColumn,
-  Unique,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryColumn, Unique, UpdateDateColumn } from "typeorm";
 
 @Entity()
 export default class User {
@@ -28,11 +20,11 @@ export default class User {
   @Column({ unique: true })
   username: string;
 
-  @Column()
+  @Column({ length: 60 })
   passwd: string;
 
   @Column()
-  userType: 'standard' | 'premium' | 'admin';
+  userType: "standard" | "premium" | "admin";
 
   @CreateDateColumn()
   createdAt: Date;
