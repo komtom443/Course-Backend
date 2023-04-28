@@ -20,6 +20,13 @@ export default class TokenService {
         data: "403",
       };
     }
+    console.log({
+      id: idGen(),
+      userId: await this.userService.getUserIdByUsername(user.username),
+      tokenValue: await bcrypt.hash(user.username + new Date().toDateString(), 10),
+      expiredAt: new Date(),
+    });
+
     const token = await this.tokenRepo.save({
       id: idGen(),
       userId: await this.userService.getUserIdByUsername(user.username),
@@ -30,5 +37,12 @@ export default class TokenService {
       isError: false,
       data: token.tokenValue,
     };
+  }
+
+  async validateToken(tokenValue: string) {
+    const token = await this.tokenRepo.find({
+      where: { tokenValue: tokenValue },
+    });
+    return token ? true : false;
   }
 }

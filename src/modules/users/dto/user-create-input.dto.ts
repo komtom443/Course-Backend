@@ -1,4 +1,4 @@
-import { IsEmail, IsInt, IsNotEmpty, IsPositive } from 'class-validator';
+import { IsEmail, IsInt, IsNotEmpty, IsPositive } from "class-validator";
 
 export default class UserCreateInput {
   @IsNotEmpty()
@@ -21,7 +21,4 @@ export default class UserCreateInput {
 
   @IsNotEmpty()
   passwd: string;
-
-  @IsNotEmpty()
-  userType: 'standard' | 'premium' | 'admin';
 }

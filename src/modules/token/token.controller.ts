@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Query } from "@nestjs/common";
+import { Body, Controller, Post, Put, Query } from "@nestjs/common";
 import User from "src/entities/user.entity";
 import TokenService from "./token.service";
 import { UserService } from "../users/user.service";

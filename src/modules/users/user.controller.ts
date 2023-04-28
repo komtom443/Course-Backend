@@ -18,10 +18,8 @@ export class UserController {
   }
 
   @Post()
-  async create(@Body() users: UserCreateInput[]) {
-    console.log("Create");
-
-    return await this.userSevice.createUsers(users);
+  async create(@Body() user: UserCreateInput) {
+    return await this.userSevice.createUsers(user);
   }
 
   @Put()

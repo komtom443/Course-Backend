@@ -23,18 +23,15 @@ export class UserService {
     });
   }
 
-  async createUsers(users: UserCreateInput[]) {
+  async createUsers(user: UserCreateInput) {
     var resp: any[] = [];
-    for (const user of users) {
-      user.passwd = await bcrypt.hash(user.passwd, 10);
+    user.passwd = await bcrypt.hash(user.passwd, 10);
 
-      resp.push({
-        id: idGen(),
-        ...user,
-      });
-      console.log(resp);
-    }
-    console.log("KOM");
+    resp.push({
+      id: idGen(),
+      userType: "standard",
+      ...user,
+    });
 
     return this.userRepo.save(resp);
   }
@@ -61,6 +58,7 @@ export class UserService {
     const user = await this.userRepo.findOne({
       where: { username },
     });
+
     if (!user) {
       return false;
     }
