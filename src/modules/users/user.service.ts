@@ -14,6 +14,9 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private userRepo: Repository<User>,
+
+    @InjectRepository(Token)
+    private tokenRepo: Repository<Token>,
   ) {}
 
   async getUsers(sort?: "ASC" | "DESC") {
@@ -29,6 +32,7 @@ export class UserService {
 
     resp.push({
       id: idGen(),
+      avatarUrl: "https://via.placeholder.com/90x90.png/ffdf0f?text=" + user.lastName[0].toUpperCase,
       userType: "standard",
       ...user,
     });
@@ -52,16 +56,29 @@ export class UserService {
     return this.userRepo.save(resp);
   }
 
-  async getBasic(userToken: string) {}
+  async getBasic(tokenValue: string) {
+    const userId = (
+      await this.tokenRepo.findOne({
+        select: ["userId"],
+        where: {
+          tokenValue,
+        },
+      })
+    ).tokenValue;
+    return await this.userRepo.findOne({
+      select: ["firstName", "lastName", "avatarUrl", "email"],
+      where: { id: userId },
+    });
+  }
 
   async validateUser({ username, passwd }: TokenCreateInput) {
-    const user = await this.userRepo.findOne({
-      where: { username },
-    });
-
-    if (!user) {
+    try {
+      const user = await this.userRepo.findOne({
+        where: { username },
+      });
+      return await bcrypt.compare(passwd, user.passwd);
+    } catch {
       return false;
     }
-    return await bcrypt.compare(passwd, user.passwd);
   }
 }

@@ -1,4 +1,4 @@
-import { IsEmail, IsInt, IsNotEmpty, IsPositive } from 'class-validator';
+import { IsEmail, IsInt, IsNotEmpty, IsPositive } from "class-validator";
 export default class UserUpdateInput {
   @IsNotEmpty()
   id: string;
@@ -14,5 +14,7 @@ export default class UserUpdateInput {
   @IsEmail()
   email?: string;
 
-  userType?: 'standard' | 'premium' | 'admin';
+  userType?: "standard" | "premium" | "admin";
+
+  avatarUrl?: string;
 }

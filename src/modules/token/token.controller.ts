@@ -9,6 +9,8 @@ export default class TokenController {
   constructor(private tokenService: TokenService) {}
   @Post()
   async create(@Body() user: TokenCreateInput) {
+    console.log(user);
+
     return await this.tokenService.create(user);
   }
 }

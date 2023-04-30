@@ -14,22 +14,30 @@ export default class TokenService {
   ) {}
 
   async create(user: TokenCreateInput) {
-    if (!this.userService.validateUser(user)) {
+    if (!(await this.userService.validateUser(user))) {
       return {
         isError: true,
         data: "403",
       };
     }
-    console.log({
-      id: idGen(),
-      userId: await this.userService.getUserIdByUsername(user.username),
-      tokenValue: await bcrypt.hash(user.username + new Date().toDateString(), 10),
-      expiredAt: new Date(),
-    });
+    const userId = await this.userService.getUserIdByUsername(user.username);
 
+    if (
+      (await this.tokenRepo.count({
+        where: { userId },
+      })) !== 1
+    ) {
+      const token = await this.tokenRepo.findOne({
+        where: { userId },
+      });
+      return {
+        isError: false,
+        data: token.tokenValue,
+      };
+    }
     const token = await this.tokenRepo.save({
       id: idGen(),
-      userId: await this.userService.getUserIdByUsername(user.username),
+      userId,
       tokenValue: await bcrypt.hash(user.username + new Date().toDateString(), 10),
       expiredAt: new Date(),
     });
@@ -39,9 +47,10 @@ export default class TokenService {
     };
   }
 
-  async validateToken(tokenValue: string) {
+  async validateToken(tokenValue: string, role?: "standard" | "premium" | "admin") {
+    role = role ?? "standard";
     const token = await this.tokenRepo.find({
-      where: { tokenValue: tokenValue },
+      where: { tokenValue, role },
     });
     return token ? true : false;
   }
