@@ -8,6 +8,9 @@ export default class UserCreateInput {
   lastName: string;
 
   @IsNotEmpty()
+  phone: string;
+
+  @IsNotEmpty()
   @IsInt()
   @IsPositive()
   age: number;

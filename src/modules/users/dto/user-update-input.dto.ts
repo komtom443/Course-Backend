@@ -1,4 +1,4 @@
-import { IsEmail, IsInt, IsNotEmpty, IsPositive } from 'class-validator';
+import { IsEmail, IsInt, IsNotEmpty, IsPositive } from "class-validator";
 export default class UserUpdateInput {
   @IsNotEmpty()
   id: string;
@@ -7,6 +7,10 @@ export default class UserUpdateInput {
 
   lastName?: string;
 
+  phone?: string;
+
+  isActive?: boolean;
+
   @IsInt()
   @IsPositive()
   age?: number;
@@ -14,5 +18,5 @@ export default class UserUpdateInput {
   @IsEmail()
   email?: string;
 
-  userType?: 'standard' | 'premium' | 'admin';
+  userType?: "standard" | "premium" | "admin";
 }

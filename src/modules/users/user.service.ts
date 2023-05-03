@@ -36,11 +36,11 @@ export class UserService {
     return this.userRepo.save(resp);
   }
 
-  async getUserIdByUsername(username: string) {
-    const { id } = await this.userRepo.findOne({
+  async getUserByUsername(username: string) {
+    const user = await this.userRepo.findOne({
       where: { username },
     });
-    return id;
+    return user;
   }
   async updateUsers(users: UserUpdateInput[]) {
     var resp: any[] = [];
@@ -52,7 +52,12 @@ export class UserService {
     return this.userRepo.save(resp);
   }
 
-  async getBasic(userToken: string) {}
+  async getBasic(id: string) {
+    return await this.userRepo.findOne({
+      where: { id },
+      select: ["firstName", "lastName", "username", "email", "phone"],
+    });
+  }
 
   async validateUser({ username, passwd }: TokenCreateInput) {
     const user = await this.userRepo.findOne({
@@ -63,5 +68,19 @@ export class UserService {
       return false;
     }
     return await bcrypt.compare(passwd, user.passwd);
+  }
+
+  async checkUsername(username: string) {
+    return (
+      (await this.userRepo.count({
+        where: { username },
+      })) === 0
+    );
+  }
+
+  async getUser(id: string) {
+    return this.userRepo.findOne({
+      where: { id, deletedAt: IsNull() },
+    });
   }
 }

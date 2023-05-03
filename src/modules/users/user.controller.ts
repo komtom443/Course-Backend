@@ -24,8 +24,18 @@ export class UserController {
 
   @Put()
   async update(@Body() users: UserUpdateInput[]) {
-    console.log("YES");
-
     return await this.userSevice.updateUsers(users);
+  }
+
+  @Post("username")
+  async checkUsername(@Body() username: { username: string }) {
+    console.log(username);
+
+    return await this.userSevice.checkUsername(username.username);
+  }
+
+  @Get(":id")
+  async getByID(@Param() { id }: { id: string }) {
+    return await this.userSevice.getUser(id);
   }
 }

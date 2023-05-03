@@ -14,6 +14,9 @@ export default class User {
   @Column()
   age: number;
 
+  @Column()
+  phone: string;
+
   @Column({ unique: true })
   email: string;
 
@@ -25,6 +28,9 @@ export default class User {
 
   @Column()
   userType: "standard" | "premium" | "admin";
+
+  @Column({ default: true })
+  isActive: boolean;
 
   @CreateDateColumn()
   createdAt: Date;
