@@ -11,7 +11,7 @@ export default class User {
   @Column()
   lastName: string;
 
-  @Column()
+  @Column({ type: "integer" })
   age: number;
 
   @Column()
@@ -26,7 +26,10 @@ export default class User {
   @Column({ length: 60 })
   passwd: string;
 
-  @Column()
+  @Column({})
+  avatarUrl: string;
+
+  @Column({ default: "standard" })
   userType: "standard" | "premium" | "admin";
 
   @Column({ default: true })

@@ -58,9 +58,10 @@ export default class TokenService {
     }
   }
 
-  async validateToken(tokenValue: string) {
+  async validateToken(tokenValue: string, role?: "standard" | "premium" | "admin") {
+    role = role ?? "standard";
     const token = await this.tokenRepo.find({
-      where: { tokenValue: tokenValue },
+      where: { tokenValue, role },
     });
     return token ? true : false;
   }

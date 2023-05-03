@@ -14,6 +14,9 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private userRepo: Repository<User>,
+
+    @InjectRepository(Token)
+    private tokenRepo: Repository<Token>,
   ) {}
 
   async getUsers(sort?: "ASC" | "DESC") {
@@ -29,6 +32,7 @@ export class UserService {
 
     resp.push({
       id: idGen(),
+      avatarUrl: "https://via.placeholder.com/90x90.png/ffdf0f?text=" + user.lastName[0].toUpperCase,
       userType: "standard",
       ...user,
     });
@@ -60,14 +64,14 @@ export class UserService {
   }
 
   async validateUser({ username, passwd }: TokenCreateInput) {
-    const user = await this.userRepo.findOne({
-      where: { username },
-    });
-
-    if (!user) {
+    try {
+      const user = await this.userRepo.findOne({
+        where: { username },
+      });
+      return await bcrypt.compare(passwd, user.passwd);
+    } catch {
       return false;
     }
-    return await bcrypt.compare(passwd, user.passwd);
   }
 
   async checkUsername(username: string) {
