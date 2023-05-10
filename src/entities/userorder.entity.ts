@@ -1,7 +1,7 @@
 import { type } from "os";
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryColumn, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
-Entity();
+@Entity()
 export default class UserOrder {
   @PrimaryColumn()
   id: string;
@@ -9,8 +9,11 @@ export default class UserOrder {
   @Column()
   userId: string;
 
-  @Column({ type: "int" })
+  @Column({ type: "int", default: 0 })
   price: number;
+
+  @Column({ default: "editing" })
+  state: "complete" | "editing" | "shipping";
 
   @CreateDateColumn()
   createdAt: Date;

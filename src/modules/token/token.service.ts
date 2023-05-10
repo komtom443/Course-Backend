@@ -72,4 +72,11 @@ export default class TokenService {
     });
     return this.userService.getBasic(userId);
   }
+
+  async getUserByToken(token: string) {
+    const { userId } = await this.tokenRepo.findOne({
+      where: { tokenValue: token },
+    });
+    return this.userService.getUser(userId);
+  }
 }

@@ -1,7 +1,7 @@
 import { type } from "os";
 import { Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryColumn, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
-Entity();
+@Entity()
 export default class OrderItem {
   @PrimaryGeneratedColumn()
   id: number;
@@ -9,15 +9,18 @@ export default class OrderItem {
   @Column()
   itemId: string;
 
-  @Column({ type: "int" })
+  @Column()
+  orderId: string;
+
+  @Column({ type: "int", default: 0 })
   price: number;
 
   @Column({ type: "int", default: 0 })
-  normalNumber: number;
+  sizeS: number;
 
   @Column({ type: "int", default: 0 })
-  mediumNumber: number;
+  sizeM: number;
 
   @Column({ type: "int", default: 0 })
-  largeNumber: number;
+  sizeL: number;
 }

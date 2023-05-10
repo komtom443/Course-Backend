@@ -55,7 +55,7 @@ export class ItemService {
     return this.itemRepo.find({
       where: { deletedAt: IsNull() },
       order: { saleNumber: "DESC" },
-      take: 2,
+      take: 3,
     });
   }
 }
