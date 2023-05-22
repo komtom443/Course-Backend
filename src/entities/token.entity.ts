@@ -11,12 +11,15 @@ export default class Token {
   @Column()
   tokenValue: string;
 
+  @Column({ default: false })
+  isRemember: boolean;
+
   @CreateDateColumn()
   createdAt: Date;
 
-  @Column({ type: "date" })
+  @Column({ type: "datetime" })
   expiredAt: Date;
 
   @Column()
-  role: "standard" | "premium" | "admin";
+  role: "standard" | "teacher" | "admin";
 }

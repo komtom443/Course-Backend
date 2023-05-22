@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Put, Query } from "@nestjs/common";
+import { Body, Controller, Get, Inject, Param, Post, Put, Query, forwardRef } from "@nestjs/common";
 import { UserService } from "./user.service";
 import UserCreateInput from "./dto/user-create-input.dto";
 import UserUpdateInput from "./dto/user-update-input.dto";
@@ -10,6 +10,11 @@ export class UserController {
   @Get()
   async get(@Query("sort") sort?: "ASC" | "DESC") {
     return await this.userSevice.getUsers(sort);
+  }
+
+  @Post("getUsersAdmin")
+  async getUsersAdmin(@Body() body: any) {
+    return await this.userSevice.getUsersAdmin(body);
   }
 
   @Post("get_basic")
@@ -29,9 +34,17 @@ export class UserController {
 
   @Post("username")
   async checkUsername(@Body() username: { username: string }) {
-    console.log(username);
-
     return await this.userSevice.checkUsername(username.username);
+  }
+
+  @Post("teacher")
+  async getTeacher(@Body() { token }: { token: string }) {
+    return await this.userSevice.getTeacher(token);
+  }
+
+  @Post("email")
+  async checkEmail(@Body() { email }: { email: string }) {
+    return await this.userSevice.checkEmail(email);
   }
 
   @Get(":id")

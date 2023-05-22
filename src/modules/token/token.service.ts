@@ -5,12 +5,14 @@ import { UserService } from "../users/user.service";
 import TokenCreateInput from "./dto/token-create-input.dto";
 import { v4 as idGen } from "uuid";
 import * as bcrypt from "bcrypt";
-import { log } from "console";
+import { Inject, forwardRef } from "@nestjs/common";
 
 export default class TokenService {
   constructor(
     @InjectRepository(Token)
     private tokenRepo: Repository<Token>,
+
+    @Inject(forwardRef(() => UserService))
     private userService: UserService,
   ) {}
 
@@ -28,11 +30,13 @@ export default class TokenService {
           where: { userId: fullUser.id },
         })) !== 1
       ) {
+        console.log("NEw");
+
         const token = await this.tokenRepo.save({
           id: idGen(),
           userId: fullUser.id,
           tokenValue: await bcrypt.hash(user.username + new Date().toDateString(), 10),
-          expiredAt: new Date(),
+          expiredAt: new Date(new Date().getTime() + 1800000),
           role: fullUser.userType,
         });
         return {
@@ -41,8 +45,13 @@ export default class TokenService {
           role: fullUser.userType,
         };
       }
+
       const token = await this.tokenRepo.findOne({
         where: { userId: fullUser.id },
+      });
+      await this.tokenRepo.save({
+        ...token,
+        expiredAt: new Date(new Date().getTime() + 1800000),
       });
       return {
         isError: false,
@@ -58,15 +67,32 @@ export default class TokenService {
     }
   }
 
-  async validateToken(tokenValue: string, role?: "standard" | "premium" | "admin") {
-    role = role ?? "standard";
-    const token = await this.tokenRepo.find({
-      where: { tokenValue, role },
+  // Hàm xác thực token
+
+  async validateToken(tokenValue: string, role?: "standard" | "teacher" | "admin") {
+    const token = await this.tokenRepo.findOne({
+      where: { tokenValue, ...(role ? { role } : {}) },
     });
-    return token ? true : false;
+    if (!token) {
+      return false;
+    }
+    if (token.isRemember) {
+      return true;
+    }
+
+    if (new Date().getTime() < new Date(token.expiredAt).getTime()) {
+      await this.tokenRepo.save({ ...token, expiredAt: new Date(new Date().getTime() + 1800000) });
+      return true;
+    }
+    return false;
   }
 
+  // ........................
+
   async getBasicByToken(token: string) {
+    if (!(await this.validateToken(token))) {
+      return;
+    }
     const { userId } = await this.tokenRepo.findOne({
       where: { tokenValue: token },
     });
@@ -78,5 +104,15 @@ export default class TokenService {
       where: { tokenValue: token },
     });
     return this.userService.getUser(userId);
+  }
+
+  async getRole(token: string) {
+    if (!(await this.validateToken(token))) {
+      return { isError: true };
+    }
+    const { role } = await this.tokenRepo.findOne({
+      where: { tokenValue: token },
+    });
+    return role;
   }
 }

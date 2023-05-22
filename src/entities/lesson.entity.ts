@@ -1,5 +1,5 @@
-import { Column, Entity, ManyToMany, PrimaryColumn } from 'typeorm';
-import Course from './course.entity';
+import { Column, Entity, JoinTable, ManyToMany, PrimaryColumn } from "typeorm";
+import Course from "./course.entity";
 
 @Entity()
 export default class Lesson {
@@ -12,5 +12,5 @@ export default class Lesson {
   @ManyToMany(() => Course, (courses: Course) => courses.lessons, {
     nullable: true,
   })
-  courses: Promise<Course[]>;
+  courses: Course[];
 }

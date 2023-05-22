@@ -18,5 +18,5 @@ export default class UserUpdateInput {
   @IsEmail()
   email?: string;
 
-  userType?: "standard" | "premium" | "admin";
+  userType?: "standard" | "teacher" | "admin";
 }

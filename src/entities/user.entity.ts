@@ -1,4 +1,6 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryColumn, Unique, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinTable, ManyToMany, OneToMany, PrimaryColumn, Unique, UpdateDateColumn } from "typeorm";
+import Course from "./course.entity";
+import StudentCourse from "./student_course.entity";
 
 @Entity()
 export default class User {
@@ -30,10 +32,15 @@ export default class User {
   avatarUrl: string;
 
   @Column({ default: "standard" })
-  userType: "standard" | "premium" | "admin";
+  userType: "standard" | "teacher" | "admin";
 
   @Column({ default: true })
   isActive: boolean;
+
+  @ManyToMany(() => Course, (course: Course) => course.teachers, {
+    nullable: true,
+  })
+  coursesTaught: Course[];
 
   @CreateDateColumn()
   createdAt: Date;
@@ -43,4 +50,7 @@ export default class User {
 
   @DeleteDateColumn()
   deletedAt: Date;
+
+  @OneToMany(() => StudentCourse, studentCourse => studentCourse.user, { nullable: true })
+  courses?: StudentCourse[];
 }

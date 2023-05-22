@@ -1,13 +1,8 @@
-import {
-  Column,
-  CreateDateColumn,
-  DeleteDateColumn,
-  Entity,
-  ManyToMany,
-  PrimaryColumn,
-  UpdateDateColumn,
-} from 'typeorm';
-import Lesson from './lesson.entity';
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinTable, ManyToMany, OneToMany, PrimaryColumn, UpdateDateColumn } from "typeorm";
+import Lesson from "./lesson.entity";
+import Category from "./category.entity";
+import User from "./user.entity";
+import StudentCourse from "./student_course.entity";
 
 @Entity()
 export default class Course {
@@ -17,11 +12,36 @@ export default class Course {
   @Column()
   name: string;
 
-  @Column()
+  @Column({ nullable: true, length: 1024 })
   note: string;
 
-  @Column()
-  courseType: 'standard' | 'premium' | 'admin';
+  @Column({ default: 0, type: "int" })
+  lessonNumber: number;
+
+  @Column({ default: 0, type: "int" })
+  currentUserNumber: number;
+
+  @Column({ default: 0, type: "int" })
+  maxUserNumber: number;
+
+  @ManyToMany(() => Category, (category: Category) => category.courses, { nullable: true })
+  @JoinTable()
+  categories: Category[];
+
+  @ManyToMany(() => Lesson, (lesson: Lesson) => lesson.courses, {
+    nullable: true,
+  })
+  @JoinTable()
+  lessons: Lesson[];
+
+  @ManyToMany(() => User, (user: User) => user.coursesTaught, {
+    nullable: true,
+  })
+  @JoinTable()
+  teachers: User[];
+
+  @OneToMany(() => StudentCourse, studentCourse => studentCourse.course, { nullable: true })
+  students?: StudentCourse[];
 
   @CreateDateColumn()
   createdAt: Date;
@@ -31,9 +51,4 @@ export default class Course {
 
   @DeleteDateColumn()
   deletedAt: Date;
-
-  @ManyToMany(() => Lesson, (lesson: Lesson) => lesson.courses, {
-    nullable: true,
-  })
-  lessons: Promise<Lesson[]>;
 }

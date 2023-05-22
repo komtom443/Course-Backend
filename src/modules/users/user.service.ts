@@ -7,9 +7,11 @@ import UserUpdateInput from "./dto/user-update-input.dto";
 import Token from "src/entities/token.entity";
 import * as bcrypt from "bcrypt";
 import TokenCreateInput from "../token/dto/token-create-input.dto";
+import TokenService from "../token/token.service";
+import { Inject, Injectable, forwardRef } from "@nestjs/common";
 
 type getBasic = {};
-
+@Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
@@ -17,6 +19,9 @@ export class UserService {
 
     @InjectRepository(Token)
     private tokenRepo: Repository<Token>,
+
+    @Inject(forwardRef(() => TokenService))
+    private tokenService: TokenService,
   ) {}
 
   async getUsers(sort?: "ASC" | "DESC") {
@@ -32,7 +37,7 @@ export class UserService {
 
     resp.push({
       id: idGen(),
-      avatarUrl: "https://via.placeholder.com/90x90.png/ffdf0f?text=" + user.lastName[0].toUpperCase,
+      avatarUrl: "https://via.placeholder.com/90x90.png/ffdf0f?text=" + user.lastName[0].toUpperCase(),
       userType: "standard",
       ...user,
     });
@@ -59,7 +64,7 @@ export class UserService {
   async getBasic(id: string) {
     return await this.userRepo.findOne({
       where: { id },
-      select: ["firstName", "lastName", "username", "email", "phone"],
+      select: ["firstName", "lastName", "username", "email", "phone", "avatarUrl", "userType"],
     });
   }
 
@@ -82,9 +87,37 @@ export class UserService {
     );
   }
 
+  async checkEmail(email: string) {
+    return (
+      (await this.userRepo.count({
+        where: { email },
+      })) === 0
+    );
+  }
+
   async getUser(id: string) {
     return this.userRepo.findOne({
       where: { id, deletedAt: IsNull() },
     });
+  }
+
+  async getTeacher(token) {
+    return this.userRepo.find({
+      // where: { userType: "premium" },
+    });
+  }
+
+  async getUsersAdmin({ token }: { token: string; courseId: string }) {
+    if (!(await this.tokenService.validateToken(token, "admin"))) {
+      return { error: "Lỗi xác thực tài khoản" };
+    }
+    const users: any = await this.userRepo
+      .createQueryBuilder("user")
+      .leftJoinAndSelect("user.courses", "student_course")
+      .where("user.deletedAt IS NULL")
+      .orderBy("user.firstName")
+      .getMany();
+    delete users.teachers;
+    return users;
   }
 }
