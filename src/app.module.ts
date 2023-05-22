@@ -8,10 +8,12 @@ import { UserModule } from "./modules/users/user.module";
 import TokenModule from "./modules/token/token.module";
 import CourseModule from "./modules/course/course.module";
 import CategoryModule from "./modules/category/category.module";
+import LessonModule from "./modules/lesson/lesson.module";
 @Module({
   imports: [
     UserModule,
     TokenModule,
+    LessonModule,
     CourseModule,
     CategoryModule,
     ConfigModule.forRoot({

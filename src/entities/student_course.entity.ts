@@ -4,8 +4,8 @@ import User from "./user.entity";
 
 @Entity()
 export default class StudentCourse {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryColumn()
+  id: string;
 
   @ManyToOne(() => User, student => student.courses, { nullable: true })
   @JoinColumn()
@@ -18,6 +18,6 @@ export default class StudentCourse {
   @Column({ type: "int", default: 0 })
   progress: number;
 
-  @Column({ default: "0 0 0 " })
+  @Column({ default: "0 0 0" })
   score: string;
 }

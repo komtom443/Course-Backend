@@ -114,6 +114,7 @@ export class UserService {
     const users: any = await this.userRepo
       .createQueryBuilder("user")
       .leftJoinAndSelect("user.courses", "student_course")
+      .leftJoinAndSelect("student_course.course", "course")
       .where("user.deletedAt IS NULL")
       .orderBy("user.firstName")
       .getMany();
