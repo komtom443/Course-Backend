@@ -8,6 +8,7 @@ import Course from "src/entities/course.entity";
 import StudentCourse from "src/entities/student_course.entity";
 import { UserService } from "../users/user.service";
 import User from "src/entities/user.entity";
+import { log } from "console";
 
 export default class CourseService {
   constructor(
@@ -154,6 +155,7 @@ export default class CourseService {
     if (!(await this.tokenService.validateToken(token, "admin"))) {
       return { error: "Lỗi xác thực tài khoản" };
     }
+
     return await this.courseRepo
       .createQueryBuilder("course")
       .leftJoinAndSelect("course.lessons", "lesson")
@@ -167,6 +169,8 @@ export default class CourseService {
     if (!(await this.tokenService.validateToken(token, "admin"))) {
       return { error: "Lỗi xác thực tài khoản" };
     }
+    console.log(data);
+
     await this.courseRepo.save({
       id: data.id,
       lessonNumber: data.lessons.length,
