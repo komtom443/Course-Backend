@@ -7,10 +7,12 @@ export default class Lesson {
   id: string;
 
   @Column()
-  name: string;
+  title: string;
 
-  @Column({ length: 10240 })
-  note?: string;
+  @Column({ length: 1024, nullable: true })
+  goal?: string;
+  @Column({ length: 1024, nullable: true })
+  description?: string;
 
   @ManyToMany(() => Course, (courses: Course) => courses.lessons, {
     nullable: true,

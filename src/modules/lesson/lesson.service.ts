@@ -18,4 +18,11 @@ export default class LessonService {
     const lessons: any = await this.lessonRepo.createQueryBuilder("lesson").leftJoinAndSelect("lesson.courses", "course").where("lesson.deletedAt IS NULL").getMany();
     return lessons;
   }
+
+  async createLesson(token: string, lesson: { id?: string; title: string; description?: string; goal?: string }) {
+    if (!(await this.tokenService.validateToken(token, "admin"))) {
+      return { error: "Lỗi xác thực tài khoản" };
+    }
+    return await this.lessonRepo.save({ ...(!lesson.id ? { id: idGen() } : {}), ...lesson });
+  }
 }

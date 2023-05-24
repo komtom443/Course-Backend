@@ -13,10 +13,14 @@ export class UserController {
   }
 
   @Post("getUsersAdmin")
-  async getUsersAdmin(@Body() body: any) {
-    return await this.userSevice.getUsersAdmin(body);
+  async getUsersAdmin(@Body() { token }: { token: string }) {
+    return await this.userSevice.getUsersAdmin(token);
   }
 
+  @Post("getUserAdmin")
+  async getUserAdmin(@Body() { token, userId }: { token: string; userId: string }) {
+    return await this.userSevice.getUserAdmin(token, userId);
+  }
   @Post("get_basic")
   async getBasic(@Body() { userToken }: { userToken: string }) {
     return await this.userSevice.getBasic(userToken);
@@ -45,6 +49,13 @@ export class UserController {
   @Post("email")
   async checkEmail(@Body() { email }: { email: string }) {
     return await this.userSevice.checkEmail(email);
+  }
+
+  @Post("updateUsersAdmin")
+  async updateUsersAdmin(@Body() { token, users }: { token: string; users: Array<{ id: string; userType: "standard" | "teacher" | "admin" }> }) {
+    console.log(users);
+
+    return await this.userSevice.updateUsersAdmin(token, users);
   }
 
   @Get(":id")

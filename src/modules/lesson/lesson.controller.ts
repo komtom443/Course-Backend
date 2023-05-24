@@ -9,4 +9,9 @@ export default class LessonController {
   async getLessonsAdmin(@Body() { token }: { token: string }) {
     return await this.lessonService.getLessonsAdmin(token);
   }
+
+  @Post("createLesson")
+  async createLesson(@Body() { token, lesson }: { token: string; lesson: { title: string; description?: string; goal?: string } }) {
+    return await this.lessonService.createLesson(token, lesson);
+  }
 }

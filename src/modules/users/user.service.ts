@@ -1,6 +1,6 @@
 import { InjectRepository } from "@nestjs/typeorm";
 import User from "src/entities/user.entity";
-import { IsNull, Not, Repository } from "typeorm";
+import { IsNull, Not, Repository, SelectQueryBuilder } from "typeorm";
 import UserCreateInput from "./dto/user-create-input.dto";
 import { v4 as idGen } from "uuid";
 import UserUpdateInput from "./dto/user-update-input.dto";
@@ -107,7 +107,7 @@ export class UserService {
     });
   }
 
-  async getUsersAdmin({ token }: { token: string; courseId: string }) {
+  async getUsersAdmin(token: string) {
     if (!(await this.tokenService.validateToken(token, "admin"))) {
       return { error: "Lỗi xác thực tài khoản" };
     }
@@ -118,7 +118,39 @@ export class UserService {
       .where("user.deletedAt IS NULL")
       .orderBy("user.firstName")
       .getMany();
-    delete users.teachers;
     return users;
+  }
+
+  async getUserAdmin(token: string, userId: string) {
+    if (!(await this.tokenService.validateToken(token, "admin"))) {
+      return { error: "Lỗi xác thực tài khoản" };
+    }
+    const user: User = await this.userRepo.createQueryBuilder("user").where("user.deletedAt IS NULL").andWhere("user.id =:userId", { userId }).getOne();
+    let userQuery: SelectQueryBuilder<User> = await this.userRepo
+      .createQueryBuilder("user")
+      .where("user.deletedAt IS NULL")
+      .andWhere("user.id =:userId", { userId })
+      .select(["user.firstName", "user.lastName", "user.phone", "user.email", "user.username", "user.userType", "user.avatarUrl"]);
+    if (user.userType === "standard") {
+      return userQuery.leftJoinAndSelect("user.courses", "student_course").leftJoinAndSelect("student_course.course", "course").getOne();
+    }
+    if (user.userType === "teacher") {
+      return await userQuery.leftJoinAndSelect("user.coursesTaught", "course").getOne();
+    }
+    return userQuery.getOne();
+  }
+
+  async updateUsersAdmin(token: string, users: Array<{ id: string; userType: "standard" | "teacher" | "admin" }>) {
+    if (!(await this.tokenService.validateToken(token, "admin"))) {
+      return { error: "Lỗi xác thực tài khoản" };
+    }
+    for (let i = 0; i < users.length; i++) {
+      this.tokenRepo.save({
+        ...(await this.tokenRepo.findOne({ where: { userId: users[i].id } })),
+        role: users[i].userType,
+      });
+    }
+
+    return await this.userRepo.save(users);
   }
 }

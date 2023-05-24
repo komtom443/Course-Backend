@@ -47,4 +47,29 @@ export default class CourseController {
   async getLessonsInCourse(@Body() { token, courseId }: { token: string; courseId: string }) {
     return await this.courseService.getLessonsInCourse(token, courseId);
   }
+
+  @Post("addLessonInCourse")
+  async addLessonInCourse(@Body() { token, data }: { token: string; data: { id: string; lessons: Array<{ id: string }> } }) {
+    return await this.courseService.addLessonInCourse({ token, data });
+  }
+
+  @Post("getLessonInCourseAdmin")
+  async getLessonInCourseAdmin(@Body() { token, courseId, lessonId }: { token: string; courseId: string; lessonId: string }) {
+    return await this.courseService.getLessonInCourseAdmin(token, courseId, lessonId);
+  }
+
+  @Post("getCoursesUser")
+  async getCoursesUser(@Body() { token }: { token: string }) {
+    return await this.courseService.getCoursesUser(token);
+  }
+
+  @Post("addUserInCourseUser")
+  async addUserInCourseUser(@Body() { token, courseId }: { token: string; courseId: string }) {
+    return await this.courseService.addUserInCourseUser(token, courseId);
+  }
+
+  @Post("getMyCoursesUser")
+  async getMyCoursesUser(@Body() { token }: { token: string }) {
+    return await this.courseService.getMyCoursesUser(token);
+  }
 }

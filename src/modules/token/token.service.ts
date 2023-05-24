@@ -30,8 +30,6 @@ export default class TokenService {
           where: { userId: fullUser.id },
         })) !== 1
       ) {
-        console.log("NEw");
-
         const token = await this.tokenRepo.save({
           id: idGen(),
           userId: fullUser.id,
@@ -51,6 +49,7 @@ export default class TokenService {
       });
       await this.tokenRepo.save({
         ...token,
+        role: fullUser.userType,
         expiredAt: new Date(new Date().getTime() + 1800000),
       });
       return {
